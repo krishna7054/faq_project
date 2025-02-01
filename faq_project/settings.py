@@ -128,5 +128,3 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
- git config --global user.email "21it3038@rgipt.ac.in"
-  git config --global user.name "Krishna Kumar"
