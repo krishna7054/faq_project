@@ -129,6 +129,18 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+REDIS_HOST = 'redis'
+# REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+CACHE_TTL = 60 * 60
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': f'redis://{REDIS_HOST}:{REDIS_PORT}/1',
+    }
+}
+
 CKEDITOR_CONFIGS = {
     'default': {
         'toolbar': 'full',
