@@ -1,11 +1,12 @@
 from rest_framework.response import Response
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from rest_framework.decorators import api_view
 from .models import FAQ
 from .serializers import FAQSerializer
 from rest_framework import status
 from googletrans import Translator
 from django.core.cache import cache
+from .forms import faqFrom
 
 translator = Translator()
 
@@ -62,3 +63,13 @@ def get_translation(question, lang='en'):
         # Cache the result for future use
         cache.set(cache_key, translated_text, timeout=86400)  # Cache for 1 day
     return translated_text
+
+def homeview(request):
+    form=faqFrom()
+    if request.method=='POST':
+        form=faqFrom(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+        return render(request,'home.html',{'form':form})
+    return render(request, 'home.html', {'form':form})

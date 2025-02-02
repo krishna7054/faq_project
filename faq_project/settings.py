@@ -135,8 +135,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # add manulay
 
-REDIS_HOST = 'redis'
-# REDIS_HOST = 'localhost'
+# REDIS_HOST = 'redis'
+REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
 CACHE_TTL = 60 
 
