@@ -21,7 +21,6 @@ This project is a **Multilingual FAQ Management System** built using Django. It 
  git clone https://github.com/krishna7054/faq_project.git
  cd faq_project
 ```
-###  Options A 
 ### 2️⃣ Create & Activate a Virtual Environment
 
 ```bash
@@ -57,20 +56,6 @@ python manage.py makemigrations
 python manage.py migrate
 python manage.py createsuperuser  # Create an admin user
 python manage.py runserver
-```
-
-###  Options B
-### 2️⃣ Run Migrations & Start the Server
-
-```bash
-python manage.py makemigrations
-python manage.py migrate
-python manage.py createsuperuser  # Create an admin user
-```
-### 3️⃣ Run this docker command
-#### Make sure faq_project/settings.py -> REDIS_HOST = 'redis'
-```bash
-docker-compose up --build  
 ```
 
 ### 6️⃣ Access the Application
@@ -124,7 +109,12 @@ curl -X PUT http://127.0.0.1:8000/api/faqs/1/ -H "Content-Type: application/json
 curl -X DELETE http://127.0.0.1:8000/api/faqs/1/
 ```
 
-## Deployment (Bonus)
+## Docker Support
 
 - Add a `Dockerfile` and `docker-compose.yml` for containerized deployment
+
+### Build and run with Docker:
+```bash
+docker-compose up --build  
+```
 
