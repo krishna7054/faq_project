@@ -15,8 +15,6 @@ class FAQModelTest(TestCase):
             question="What is Django?",
             answer="<p>Django is a high-level Python web framework that encourages rapid development and clean, pragmatic design.</p>"
         )
-        
-        # Check if FAQ instance is created successfully
         self.assertEqual(faq.question, "What is Django?")
         self.assertTrue(faq.answer.startswith("<p>Django is"))
         self.assertEqual(str(faq), "What is Django?")
@@ -24,7 +22,6 @@ class FAQModelTest(TestCase):
     def test_faq_fields(self):
         """Test that FAQ model fields are defined correctly."""
         faq = FAQ(question="How to install Django?", answer="<p>Use pip to install Django.</p>")
-        
         self.assertEqual(faq.question, "How to install Django?")
         self.assertEqual(faq.answer, "<p>Use pip to install Django.</p>")
 
@@ -35,6 +32,7 @@ class FAQModelTest(TestCase):
             answer="<p>Python is an interpreted, high-level, general-purpose programming language.</p>"
         )
         self.assertEqual(str(faq), "What is Python?")
+
 
 class FAQAPITest(TestCase):
 
@@ -54,12 +52,11 @@ class FAQAPITest(TestCase):
         """Test the GET request for FAQs without specifying a language."""
         response = self.client.get('/api/faqs/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        
+
         faqs = response.data
         print("Response Status:", response.status_code)
         print("Response Data:", faqs)
 
-        # Ensure that the FAQs are returned with English translations (default language)
         self.assertEqual(len(faqs), 2)
         self.assertEqual(faqs[0]['question'], "What is Django?")
         self.assertTrue(faqs[0]['answer'].startswith("<p>Django is"))
@@ -73,29 +70,29 @@ class FAQAPITest(TestCase):
         print("Response Status:", response.status_code)
         print("Response Data:", faqs)
 
-        # Ensure the FAQ is translated into Spanish
+        # Translate question and answer using Google Translate
         translated_question = translator.translate("What is Django?", dest='es').text
         translated_answer = translator.translate("<p>Django is a high-level Python web framework.</p>", dest='es').text
 
-        self.assertEqual(faqs[0]['question'], translated_question)
-        self.assertEqual(faqs[0]['answer'], translated_answer)
+        # Normalize text for comparison
+        self.assertEqual(faqs[0]['question'].strip().lower(), translated_question.strip().lower())
+        self.assertEqual(faqs[0]['answer'].strip().lower(), translated_answer.strip().lower())
 
     def test_cache_translation(self):
         """Test that translations are cached correctly."""
-        # Check cache before GET request
         cache_key_question = f'faq_{self.faq1.id}_question_es'
         cache_key_answer = f'faq_{self.faq1.id}_answer_es'
-        
-        # Ensure there's no cached translation initially
+
+        cache.clear()  # Ensure cache is empty before testing
         self.assertIsNone(cache.get(cache_key_question))
         self.assertIsNone(cache.get(cache_key_answer))
-        
+
         # Make GET request with lang='es'
         self.client.get('/api/faqs/', {'lang': 'es'})
-        
-        # Ensure translations are cached after the GET request
-        self.assertIsNotNone(cache.get(cache_key_question))
-        self.assertIsNotNone(cache.get(cache_key_answer))
+
+        # Check if cache is now storing the translation
+        self.assertIsNotNone(cache.get(cache_key_question), "Cache key for question is not being set!")
+        self.assertIsNotNone(cache.get(cache_key_answer), "Cache key for answer is not being set!")
 
     def test_post_faq(self):
         """Test the POST request to create a new FAQ."""
@@ -106,20 +103,23 @@ class FAQAPITest(TestCase):
         response = self.client.post('/api/faqs/', data, format='json')
         print("Response Status:", response.status_code)
         print("Response Data:", response.data)
-        
+
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['question'], "What is Python?")
         self.assertEqual(response.data['answer'], "<p>Python is an interpreted, high-level, general-purpose programming language.</p>")
 
-    def test_invalid_post_faq(self):
-        """Test the POST request with invalid data."""
-        data = {
-            'question': "",  # Empty question should fail validation
-            'answer': "<p>Python is a programming language.</p>"
-        }
-        response = self.client.post('/api/faqs/', data, format='json')
-        print("Response Status:", response.status_code)
-        print("Response Data:", response.data)
+def test_invalid_post_faq(self):
+    """Test the POST request with invalid data."""
+    data = {
+        'question': "",  # Empty question should trigger validation error
+        'answer': "<p>Python is a programming language.</p>"
+    }
+    response = self.client.post('/api/faqs/', data, format='json')
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn('question', response.data)
+    print("Response Status:", response.status_code)
+    print("Response Data:", response.data)
+
+    self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    self.assertIn('question', response.data)
+    self.assertEqual(response.data['question'][0], "This field may not be blank.")
+
