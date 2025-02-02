@@ -21,7 +21,7 @@ This project is a **Multilingual FAQ Management System** built using Django. It 
  git clone https://github.com/krishna7054/faq_project.git
  cd faq_project
 ```
-
+###  Options A 
 ### 2️⃣ Create & Activate a Virtual Environment
 
 ```bash
@@ -58,7 +58,14 @@ python manage.py migrate
 python manage.py createsuperuser  # Create an admin user
 python manage.py runserver
 ```
-
+<!-- -------- -->
+###  Options B
+### 2️⃣ Run this docker command
+#### Make sure faq_project/settings.py -> REDIS_HOST = 'redis'
+```bash
+docker-compose up --build  
+```
+<!-- -------- -->
 ### 6️⃣ Access the Application
 
 - **Django Admin Panel:** `http://127.0.0.1:8000/admin/`
