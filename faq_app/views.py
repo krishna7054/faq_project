@@ -11,8 +11,6 @@ translator = Translator()
 
 
 
-def home_view(request):
-    return render(request,"home.html")
 
 @api_view(['GET', 'POST'])
 def get_faqs(request):
